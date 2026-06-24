@@ -1,4 +1,5 @@
 # FreeRTOS Multi-Task Synchronization and Scheduling
+This repository contains an embedded software project demonstrating real-time task scheduling and resource synchronization using FreeRTOS. The application models a concurrent data-processing environment typical in intelligent transport systems (ITS) and vehicle sensor networks.
 
 ## Project Overview
 This repository contains an embedded software project demonstrating real-time task scheduling and resource synchronization using FreeRTOS. The application models a concurrent data-processing environment typical in intelligent transport systems (ITS) and vehicle sensor networks.
