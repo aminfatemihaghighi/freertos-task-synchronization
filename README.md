@@ -1,20 +1,28 @@
-# freertos-task-synchronization
-This repository contains an embedded software project demonstrating real-time task scheduling and resource synchronization using FreeRTOS. The application models a concurrent data-processing environment typical in intelligent transport systems (ITS) and vehicle sensor networks.
+# FreeRTOS Task Synchronization & Queue Management ⏱️⚙️
 
+## Overview
+This repository contains an embedded C application demonstrating fundamental Real-Time Operating System (RTOS) concepts using **FreeRTOS**. It serves as a foundational implementation of preemptive task scheduling and Inter-Task Communication (ITC). 
 
-# FreeRTOS Multi-Task Synchronization and Scheduling
-## Project Overview
-This repository contains an embedded software project demonstrating real-time task scheduling and resource synchronization using FreeRTOS. The application models a concurrent data-processing environment typical in intelligent transport systems (ITS) and vehicle sensor networks.
+Rather than relying on hardware interrupts or messy global variables, this project utilizes a FreeRTOS **Message Queue** to safely pass data between decoupled, concurrent tasks running on the microcontroller.
 
-## Technical Stack
-* **Language:** C
-* **Framework:** FreeRTOS
-* **Core Concepts:** Multi-threading, Mutexes, Critical Sections, Periodic Scheduling
+## Architecture & Data Flow
+The application architecture is built around two primary tasks that run concurrently:
 
-## System Architecture
-The software schedules three distinct tasks with varying priorities and execution frequencies:
-* **Task 1 (1000ms) & Task 2 (500ms):** Act as sensor data generators, safely incrementing a shared variable using mutex locks to prevent race conditions. Task 2 also records these values into a fixed-size circular buffer.
-* **Task 3 (5000ms - Highest Priority):** Acts as the data processor. It periodically preempts the lower-priority tasks, safely locks the data array, computes a moving average of the recent samples, and outputs the formatted results.
+1. **The Transmitter Task (Tx):** * Executes periodically using `vTaskDelay` to ensure deterministic execution.
+   * Generates a predefined value (e.g., `100UL`).
+   * Safely posts this value to the back of the shared FreeRTOS queue using `xQueueSend`.
 
-## Skills Demonstrated
-This project highlights proficiency in embedded C programming, memory protection using semaphores, and managing deterministic execution in a Real-Time Operating System environment.
+2. **The Receiver Task (Rx):**
+   * Blocks efficiently on the shared queue using `xQueueReceive` (yielding CPU time while waiting).
+   * Automatically wakes up when data arrives in the queue.
+   * Processes the received data and toggles a hardware state (e.g., blinking an LED) to confirm successful transmission.
+
+## Key RTOS Concepts Demonstrated
+* **Preemptive Scheduling:** Both tasks are registered with the FreeRTOS kernel scheduler (`vTaskStartScheduler`), which manages CPU allocation based on task priority.
+* **Thread-Safe Communication:** Eliminates race conditions by avoiding global variables. Data is passed strictly through the kernel-managed `xQueueCreate` structure.
+* **Blocking vs. Polling:** The Rx task demonstrates efficient power management by blocking indefinitely (`portMAX_DELAY`) until data is available, rather than actively polling via CPU-intensive while-loops.
+
+## Tech Stack
+* **Kernel:** FreeRTOS
+* **Language:** C (Standard Embedded)
+* **Concepts:** Task Synchronization, Message Queues, Context Switching
